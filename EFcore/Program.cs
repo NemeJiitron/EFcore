@@ -11,27 +11,14 @@ namespace EFcore
         {
             MoviesDBContext MDb = new MoviesDBContext();
 
-            while (true)
+            User user = MDb.Registration();
+            //MDb.EnterTitle(user.Id);
+            //MDb.ChangeUser(user);
+            foreach(var t in MDb.Titles.Include(g => g.User).ToList())
             {
-                Console.WriteLine("1 - Add User\n2 - All users\n0 - Quit");
-                int choice = int.Parse(Console.ReadLine());
-                switch (choice)
+                if(t.UserId == user.Id)
                 {
-                    case 1:
-                        MDb.EnterUser();
-                        break;
-                    case 2:
-                        foreach (var user in MDb.Users)
-                        {
-                            Console.WriteLine(user.ToString());
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                if (choice == 0) 
-                {
-                    break;
+                    Console.WriteLine(t.ToString());
                 }
             }
         }

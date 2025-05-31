@@ -108,7 +108,7 @@ namespace EFcore
             student.GroupId = int.Parse(Console.ReadLine());
 
             student.Group = db.Groups.FirstOrDefault(g => g.Id == student.GroupId);
-
+            
             db.Students.Add(student);
 
             db.SaveChanges();
