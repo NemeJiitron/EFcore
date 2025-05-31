@@ -9,18 +9,9 @@ namespace EFcore
     {
         static void Main(string[] args)
         {
-            MoviesDBContext MDb = new MoviesDBContext();
+            AppDbContext db = new AppDbContext();
 
-            User user = MDb.Registration();
-            //MDb.EnterTitle(user.Id);
-            //MDb.ChangeUser(user);
-            foreach(var t in MDb.Titles.Include(g => g.User).ToList())
-            {
-                if(t.UserId == user.Id)
-                {
-                    Console.WriteLine(t.ToString());
-                }
-            }
+            
         }
     }
 }
