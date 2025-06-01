@@ -9,7 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace EFcore
 {
-    internal class AppDbContext : DbContext
+    public class AppDbContext : DbContext
     {
         public DbSet<Student> Students { get; set; }
         public DbSet<Passport> Passports { get; set; }
@@ -17,6 +17,7 @@ namespace EFcore
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Group> Groups { get; set; }
+        public DbSet<StudentGroupView> StudentGroupViews { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -41,6 +42,7 @@ namespace EFcore
                 e.ToTable(t => t.HasCheckConstraint(
                     "CK_Student_StudyFormat",
                     $"[StudyFormat] IN ('FullTime', 'PartTime', 'Online', 'Hybrid')"));
+
             });
             modelBuilder.Entity<Student>()
                 .HasOne(s => s.Passport)
@@ -69,6 +71,10 @@ namespace EFcore
             modelBuilder.Entity<Subject>()
                 .HasOne(s => s.Department)
                 .WithOne(s => s.Subject);
+
+            modelBuilder.Entity<StudentGroupView>()
+                .HasNoKey()
+                .ToView("vw_StudentGroup");
         }
         public static void CreateGroup(AppDbContext db)
         {
@@ -142,8 +148,11 @@ namespace EFcore
             student.FirstName = Console.ReadLine();
             Console.WriteLine("LastName: ");
             student.LastName = Console.ReadLine();
+            Console.WriteLine("Email: ");
+            student.Email = Console.ReadLine();
             Console.WriteLine("Age: ");
             student.Age = int.Parse(Console.ReadLine());
+            student.StudyFormat = StudyFormat.Fulltime;
             Console.WriteLine("Scholarship: ");
             string scholarship = Console.ReadLine();
             student.Scholarship = scholarship.IsNullOrEmpty() ? null : float.Parse(scholarship);
@@ -217,9 +226,5 @@ namespace EFcore
             }
         }
     }
-
-
-
 }
 
-}
