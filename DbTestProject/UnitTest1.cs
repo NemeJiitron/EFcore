@@ -50,5 +50,61 @@ namespace DbTestProject
 
 
         }
+        [Test]
+        public void AddTeacher_TeacherAddedToDB()
+        {
+            // Arrange - готуємось до тесту
+
+            using (AppDbContext db = new AppDbContext())
+            {
+                db.Database.EnsureDeleted();
+                db.Database.EnsureCreated();
+
+                Teacher t = new Teacher() { Name = "Test", Salary = 10, Age = 10 };
+
+                db.Teachers.Add(t);
+                db.SaveChanges();
+            }
+
+            // Assert
+
+            using (AppDbContext db = new AppDbContext())
+            {
+                Teacher t = db.Teachers.FirstOrDefault();
+
+                Assert.IsNotNull(t);
+                Assert.AreEqual("Test", t.Name);
+            }
+        }
+
+        public void AddSubject_SubjectAddedToDB()
+        {
+            // Arrange - готуємось до тесту
+
+            using (AppDbContext db = new AppDbContext())
+            {
+                db.Database.EnsureDeleted();
+                db.Database.EnsureCreated();
+
+                Subject s = new Subject() { Name = "Test", Hours = 10, DepartamentId = 1, Description = "test" };
+
+                db.Subjects.Add(s);
+                db.SaveChanges();
+            }
+
+            // Assert
+
+            using (AppDbContext db = new AppDbContext())
+            {
+                Subject s = db.Subjects.FirstOrDefault();
+
+                Assert.IsNotNull(s);
+                Assert.AreEqual("Test", s.Name);
+            }
+        }
+
     }
+
+
+
 }

@@ -18,6 +18,7 @@ namespace EFcore
         public DbSet<Department> Departments { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<StudentGroupView> StudentGroupViews { get; set; }
+        public DbSet<SubjectDepartmentView> SubjectDepartmentViews { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -75,6 +76,10 @@ namespace EFcore
             modelBuilder.Entity<StudentGroupView>()
                 .HasNoKey()
                 .ToView("vw_StudentGroup");
+
+            modelBuilder.Entity<SubjectDepartmentView>()
+                .HasNoKey()
+                .ToView("vw_SubjectDepartment");
         }
         public static void CreateGroup(AppDbContext db)
         {

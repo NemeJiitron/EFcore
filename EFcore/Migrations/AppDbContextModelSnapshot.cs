@@ -189,6 +189,21 @@ namespace EFcore.Migrations
                     b.ToTable("Subjects");
                 });
 
+            modelBuilder.Entity("EFcore.Entities.SubjectDepartmentView", b =>
+                {
+                    b.Property<string>("DepartmentName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubjectName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("vw_SubjectDepartment", (string)null);
+                });
+
             modelBuilder.Entity("EFcore.Entities.Teacher", b =>
                 {
                     b.Property<int>("Id")

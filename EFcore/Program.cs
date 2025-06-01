@@ -11,15 +11,60 @@ namespace EFcore
         {
             AppDbContext db = new AppDbContext();
 
-            string name = Console.ReadLine();
+            //string name = Console.ReadLine();
             //db.Database.ExecuteSqlRaw("Exec p_AddGroup @p0", name);
-            
-            AppDbContext.ReadAllGroups(db);
 
-            foreach (var sg in db.StudentGroupViews)
+            while (true)
             {
-                Console.WriteLine(sg.StudentName + " - " + sg.GroupName);
+                Console.WriteLine("1 - Expand table\n2 - View table\n0 - Quit");
+                string input = Console.ReadLine();
+                switch(input)
+                {
+                    case "1":
+                        Console.WriteLine("1 - Students\n2 - Teachers\n3 - Group\n0 - Quit");
+                        string input2 = Console.ReadLine();
+                        switch (input2)
+                        {
+                            case "1":
+                                AppDbContext.CreateStudent(db);
+                                break;
+                            case "2":
+                                AppDbContext.CreateTeacher(db);
+                                break;
+                            case "3":
+                                AppDbContext.CreateGroup(db);
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case "2":
+                        Console.WriteLine("1 - Students\n2 - Teachers\n3 - Group\n0 - Quit");
+                        string input3 = Console.ReadLine();
+                        switch (input3)
+                        {
+                            case "1":
+                                AppDbContext.ReadAllStudents(db);
+                                break;
+                            case "2":
+                                AppDbContext.ReadAllTeachers(db);
+                                break;
+                            case "3":
+                                AppDbContext.ReadAllGroups(db);
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                if (input == "0")
+                {
+                    break;
+                }
             }
+            
         }
     }
 }

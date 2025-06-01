@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFcore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250531105809_TeacherSubject_Table")]
-    partial class TeacherSubject_Table
+    [Migration("20250601143847_AddTeacherProcedure")]
+    partial class AddTeacherProcedure
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,9 +41,16 @@ namespace EFcore.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SubjectId")
+                        .IsUnique();
 
                     b.ToTable("Departments");
                 });
@@ -58,7 +65,8 @@ namespace EFcore.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.HasKey("Id");
 
@@ -85,7 +93,10 @@ namespace EFcore.Migrations
                     b.HasIndex("StudentId")
                         .IsUnique();
 
-                    b.ToTable("Passports");
+                    b.ToTable("Passports", t =>
+                        {
+                            t.HasCheckConstraint("CK_Passport_Number", "[Number] LIKE '_________'");
+                        });
                 });
 
             modelBuilder.Entity("EFcore.Entities.Student", b =>
@@ -97,25 +108,25 @@ namespace EFcore.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Age")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(16);
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
 
                     b.Property<int?>("GroupId")
                         .HasColumnType("int");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
 
                     b.Property<decimal?>("Scholarship")
                         .HasColumnType("decimal(6,2)");
@@ -139,6 +150,21 @@ namespace EFcore.Migrations
                         });
                 });
 
+            modelBuilder.Entity("EFcore.Entities.StudentGroupView", b =>
+                {
+                    b.Property<string>("GroupName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StudentName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("vw_StudentGroup", (string)null);
+                });
+
             modelBuilder.Entity("EFcore.Entities.Subject", b =>
                 {
                     b.Property<int>("Id")
@@ -147,8 +173,10 @@ namespace EFcore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("DepartamentId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Hours")
@@ -156,11 +184,27 @@ namespace EFcore.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Subjects");
+                });
+
+            modelBuilder.Entity("EFcore.Entities.SubjectDepartmentView", b =>
+                {
+                    b.Property<string>("DepartmentName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubjectName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("vw_SubjectDepartment", (string)null);
                 });
 
             modelBuilder.Entity("EFcore.Entities.Teacher", b =>
@@ -176,14 +220,18 @@ namespace EFcore.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<float>("Salary")
-                        .HasColumnType("real");
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("decimal(8,2)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Teachers");
+                    b.ToTable("Teachers", t =>
+                        {
+                            t.HasCheckConstraint("CK_Teacher_Salary", "[Salary] > 0");
+                        });
                 });
 
             modelBuilder.Entity("SubjectTeacher", b =>
@@ -199,6 +247,17 @@ namespace EFcore.Migrations
                     b.HasIndex("TeachersId");
 
                     b.ToTable("TeachersSubjects", (string)null);
+                });
+
+            modelBuilder.Entity("EFcore.Entities.Department", b =>
+                {
+                    b.HasOne("EFcore.Entities.Subject", "Subject")
+                        .WithOne("Department")
+                        .HasForeignKey("EFcore.Entities.Department", "SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subject");
                 });
 
             modelBuilder.Entity("EFcore.Entities.Passport", b =>
@@ -244,6 +303,12 @@ namespace EFcore.Migrations
             modelBuilder.Entity("EFcore.Entities.Student", b =>
                 {
                     b.Navigation("Passport");
+                });
+
+            modelBuilder.Entity("EFcore.Entities.Subject", b =>
+                {
+                    b.Navigation("Department")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
