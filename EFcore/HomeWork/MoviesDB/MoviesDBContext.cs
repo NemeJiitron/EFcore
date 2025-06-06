@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EFcore.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EFcore.HomeWork.MoviesDB
 {
@@ -18,6 +19,35 @@ namespace EFcore.HomeWork.MoviesDB
         {
             optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=EfDemoDb;");
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>(e =>
+            {
+                e.ToTable("Users").HasKey(e => e.Id);
+                e.HasIndex(u => u.Name).IsUnique();
+                e.ToTable(u => u.HasCheckConstraint("CK_Users_Name", "[Name] <> ''"));
+                e.ToTable(t => t.HasCheckConstraint("CK_Users_Email", "[Email] LIKE '%@%.%'"));
+            });
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Titles)
+                .WithOne(t => t.User);
+
+            modelBuilder.Entity<Title>(e =>
+            {
+                e.ToTable("Titles").HasKey(e => e.Id);
+                e.Property(u => u.Name).HasMaxLength(50);
+                e.Property(u => u.ReleaseDate).HasDefaultValueSql("GETDATE()");
+
+            });
+
+            modelBuilder.Entity<Title>()
+                .HasOne(t => t.User)
+                .WithMany(u => u.Titles)
+                .HasForeignKey(t => t.UserId);
+
+        }
+
         public User Registration()
         {
             Console.WriteLine("User Login: ");
