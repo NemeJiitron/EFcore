@@ -4,6 +4,7 @@ using EFcore.HomeWork.MoviesDB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFcore.Migrations.MoviesDB
 {
     [DbContext(typeof(MoviesDBContext))]
-    partial class MoviesDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250610095313_UserTitleView")]
+    partial class UserTitleView
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -96,15 +99,17 @@ namespace EFcore.Migrations.MoviesDB
 
             modelBuilder.Entity("EFcore.HomeWork.MoviesDB.UserTitleView", b =>
                 {
-                    b.Property<int>("TitleId")
-                        .HasColumnType("int");
+                    b.Property<string>("TitleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TitleName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
                         .IsRequired()

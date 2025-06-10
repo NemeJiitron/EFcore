@@ -10,10 +10,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace EFcore.HomeWork.MoviesDB
 {
-    internal class MoviesDBContext : DbContext
+    public class MoviesDBContext : DbContext
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Title> Titles { get; set; }
+        public DbSet<UserTitleView> UserTitleView { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -46,6 +47,9 @@ namespace EFcore.HomeWork.MoviesDB
                 .WithMany(u => u.Titles)
                 .HasForeignKey(t => t.UserId);
 
+            modelBuilder.Entity<UserTitleView>()
+                .HasNoKey()
+                .ToView("vw_UserTitle");
         }
 
         public User Registration()

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EFcore.HomeWork.MoviesDB
 {
-    internal class Title
+    public class Title
     {
         public int Id { get; set; }
         public string Name { get; set; }

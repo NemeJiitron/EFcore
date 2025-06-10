@@ -1,6 +1,9 @@
+using System.ComponentModel.DataAnnotations;
 using EFcore;
 using EFcore.Entities;
+using EFcore.HomeWork.MoviesDB;
 using EFcore.Migrations;
+using EFcore.Migrations.MoviesDB;
 using Microsoft.EntityFrameworkCore;
 
 namespace DbTestProject
@@ -76,7 +79,7 @@ namespace DbTestProject
                 Assert.AreEqual("Test", t.Name);
             }
         }
-
+        [Test]
         public void AddSubject_SubjectAddedToDB()
         {
             // Arrange - готуємось до тесту
@@ -100,6 +103,36 @@ namespace DbTestProject
 
                 Assert.IsNotNull(s);
                 Assert.AreEqual("Test", s.Name);
+            }
+        }
+
+        [Test]
+        public void AddUserAndTitle_UserAndTitleAddedToDB()
+        {
+            using (MoviesDBContext db = new MoviesDBContext())
+            {
+                db.Database.EnsureDeleted();
+                db.Database.EnsureCreated();
+
+                User u = new User() { Name = "test", Email = "test@test.t", Login = "test", Password = "test" };
+                db.Users.Add(u);
+                db.SaveChanges();
+
+                Title t = new Title() { Name = "test", UserId = db.Users.First().Id, ReleaseDate = DateTime.Now, Description = "test", Duration = 1 };
+                db.Titles.Add(t);
+                db.SaveChanges();
+
+            }
+
+            using (MoviesDBContext db = new MoviesDBContext())
+            {
+                User u = db.Users.FirstOrDefault();
+                Title t = db.Titles.FirstOrDefault();
+
+                Assert.IsNotNull(u);
+                Assert.AreEqual("test", u.Name);
+                Assert.IsNotNull(t);
+                Assert.AreEqual("test", u.Name);
             }
         }
 
